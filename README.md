@@ -1,3 +1,7 @@
+# EECS582 project
+
+A group of UMich students are playing around with Karma, trying to find its defects and/or design a better allocation policy.
+
 # Karma: Resource Allocation for Dynamic Demands
 
 This repository contains open source code for Karma, a new resource allocation mechanism for dynamic demands. Karma introduces a new credit-based resource allocation algorithm with powerful theoretical guarantees related to Pareto efficiency, strategy-proofness, and fairness under dynamic demands, that have been shown to translate well into practice. For a full technical description of Karma, please refer to our [OSDI'23 paper](https://www.usenix.org/conference/osdi23/presentation/vuppalapati).
