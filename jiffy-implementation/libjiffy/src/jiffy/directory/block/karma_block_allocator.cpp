@@ -18,7 +18,7 @@ karma_block_allocator::karma_block_allocator(uint32_t num_tenants, uint64_t init
     public_blocks_ = public_blocks;
     if(interval_ms > 0) 
     {
-      thread_ = std::thread(&karma_block_allocator::thread_run, this, interval_ms);
+      thread_ = std::thread(&karma_block_allocator::thread_run, this, interval_ms);//Spawns a thread that runs thread_run method at intervals specified by interval_ms
     }
 
     rate_["$public$"] = 0;
@@ -28,17 +28,18 @@ karma_block_allocator::karma_block_allocator(uint32_t num_tenants, uint64_t init
 }
 
 std::vector<std::string> karma_block_allocator::allocate(std::size_t count, const std::vector<std::string> &, const std::string &tenant_id) {
+    //allocate block to a tenant
   LOG(log_level::info) << "Allocation request for tenant_id: " << tenant_id;
   if(count > 1) {
       throw std::logic_error("Multi-block allocation support not implemented");
   }
   std::unique_lock<std::mutex> lock(mtx_);
 
-  auto my = active_blocks_.find(tenant_id);
+  auto my = active_blocks_.find(tenant_id);//active_blocks_ is some map with key-value pair <tenant_id, block_id>. 
   if(my == active_blocks_.end())
   {
     // First time seeing this tenant, register
-    register_tenant(tenant_id);
+    register_tenant(tenant_id);//set demand, credit, rate, allocation
     my = active_blocks_.find(tenant_id);
     assert(my != active_blocks_.end());
   }
