@@ -503,10 +503,10 @@ void karma_block_allocator::karma_algorithm_fast(std::unordered_map<std::string,
     }
     else if(jt.second > fair_share) {
       borrowers.push_back(jt.first);
-      total_demand += std::min(jt.second - fair_share, credits_[jt.first]);
+      total_demand += std::min(static_cast<uint64_t>(jt.second - fair_share), credits_[jt.first]);
     }
     // Allocate upto fair share
-    allocations_[jt.first] = std::min(jt.second, (uint32_t) fair_share);
+    allocations_[jt.first] = std::min(jt.second, static_cast<uint32_t>(fair_share));
   }
 
   total_supply += public_blocks_;
@@ -554,7 +554,7 @@ void karma_block_allocator::borrow_from_poorest_fast(std::unordered_map<std::str
   // Can satisfy demands of all borrowers
   uint32_t total_demand = 0;
   for(auto &b : borrowers) {
-    auto to_borrow = std::min(credits_[b], demands[b] - fair_share);
+    auto to_borrow = std::min(credits_[b], static_cast<uint64_t>(demands[b] - fair_share));
     allocations_[b] += to_borrow;
     rate_[b] -= to_borrow;
     total_demand += to_borrow;
@@ -659,7 +659,7 @@ void karma_block_allocator::give_to_richest_fast(std::unordered_map<std::string,
     karma_candidate elem;
     elem.id = b;
     elem.c = credits_[b];
-    elem.x = std::min(credits_[b], demands[b] - fair_share);
+    elem.x = std::min(credits_[b], static_cast<uint64_t>(demands[b] - fair_share));
     borrower_list.push_back(elem);
   }
   borrower_list.push_back({"$dummy$", -1, 0});
@@ -691,7 +691,7 @@ void karma_block_allocator::give_to_richest_fast(std::unordered_map<std::string,
         bheap_item item = richest_borrowers.pop();
         auto x = item.second - 1;
         sup -= 1;
-        auto delta = std::min(credits_[item.first], demands[item.first] - fair_share) - x;
+        auto delta = std::min(credits_[item.first], static_cast<uint64_t>(demands[item.first] - fair_share)) - x;
         allocations_[item.first] += delta;
         rate_[item.first] -= delta;
       }
@@ -709,7 +709,7 @@ void karma_block_allocator::give_to_richest_fast(std::unordered_map<std::string,
     // Get rid of borrowers with x = 0
     while(richest_borrowers.size() > 0 && richest_borrowers.min_val() == 0) {
       bheap_item item = richest_borrowers.pop();
-      auto delta = std::min(credits_[item.first], demands[item.first] - fair_share);
+      auto delta = std::min(credits_[item.first], static_cast<uint64_t>(demands[item.first] - fair_share));
       allocations_[item.first] += delta;
       rate_[item.first] -= delta;
     }
@@ -717,7 +717,7 @@ void karma_block_allocator::give_to_richest_fast(std::unordered_map<std::string,
 
   while(richest_borrowers.size() > 0) {
     bheap_item item = richest_borrowers.pop();
-    auto delta = std::min(credits_[item.first], demands[item.first] - fair_share) - item.second;
+    auto delta = std::min(credits_[item.first], static_cast<uint64_t>(demands[item.first] - fair_share)) - item.second;
     allocations_[item.first] += delta;
     rate_[item.first] -= delta;
   }
